@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { logoutAsync } from '../features/auth/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { showTasksSuccess } from '../features/tasks/TaskSlice'
@@ -7,6 +7,7 @@ import { showTasksSuccess } from '../features/tasks/TaskSlice'
 
 const Navbar = () => {
 
+  const navigate=useNavigate()
  
   const user = useSelector((state)=>state.authReducer.user)
   console.log(user)
@@ -19,30 +20,28 @@ const Navbar = () => {
     }
     dispatch(logoutAsync());
     dispatch(showTasksSuccess(null))
+    navigate('/user/login', { replace: true });
   };
   
 
   return (
    <nav>
 
-    <Link  to="/" className='nav-link'> 
-        Home 
-    </Link>
-
-    <Link to="/show-tasks" className='nav-link'>
-        Show Tasks
-    </Link>
-
-    <Link to="/add-task" className='nav-link'>
-        Add Tasks
-    </Link>
-
-    
-
     {user && (
       <div>
-        <span> {user.email} </span>
-        {/* <button onClick={logoutAsync()}>Log out</button>  */}
+        {/* <span> {user.email} </span> */}
+       
+        <Link  to="/" className='nav-link'> 
+             Home 
+        </Link>
+
+        <Link to="/show-tasks" className='nav-link'>
+            Show Tasks
+        </Link>
+
+        <Link to="/add-task" className='nav-link'>
+            Add Tasks
+        </Link>
         <button onClick={handleLogoutClick}>Log out</button>
       </div>
     )}

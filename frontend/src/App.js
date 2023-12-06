@@ -37,9 +37,9 @@ const App = () => {
             element={user ? <Home /> : <Navigate to="user/login" />}
           />
 
-          <Route path="/show-tasks" element={<TasksView />} />
-          <Route path="/add-task" element={<AddTask />} />
-          <Route path="/edit-task" element={<EditTask />} />
+          <Route path="/show-tasks" element={user? <TasksView />:<Login/>} />
+          <Route path="/add-task" element={user? <AddTask /> : <Login/>} />
+          <Route path="/edit-task" element={user ? <EditTask />: <Login/>} />
           <Route path="*" element={<Error />} />
 
           <Route
@@ -47,7 +47,12 @@ const App = () => {
             element={!user ? <Login /> : <Navigate to="/" />}
           />
 
-          <Route path="/user/signup" element={<Signup />} />
+          <Route
+            path="/user/signup"
+            element={!user ? <Signup /> : <Navigate to="/" />}
+          />
+
+          {/* <Route path="/user/signup" element={<Signup />} /> */}
         </Routes>
       </main>
     </BrowserRouter>
