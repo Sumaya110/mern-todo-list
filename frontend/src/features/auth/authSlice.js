@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { apiLogin, apiSignup } from '../api/apiRoute';
 
 
 const initialAuthState = {
@@ -47,11 +47,12 @@ export const initializeUserAsync = () => async (dispatch) => {
 // Thunk for user signup
 export const signupAsync = ({ email, password }) => async (dispatch) => {
   try {
-    const response = await axios.post('/api/user/signup', { email, password });
+
+    const response = await apiSignup({email, password});
 
     if (response.status === 200) {
       const user = response.data;
-      // dispatch(login(user));
+       dispatch(login(user));
       localStorage.setItem('user', JSON.stringify(user));
       dispatch(loadingComplete()); 
     } else {
@@ -69,11 +70,8 @@ export const signupAsync = ({ email, password }) => async (dispatch) => {
 export const loginAsync = (userData) => async (dispatch) => {
   
   try {
-    const response = await axios.post('/api/user/login', userData, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+
+     const response = await apiLogin(userData);
 
     console.log("response status : ", response.status)
     if (response.status === 200) {
@@ -84,14 +82,12 @@ export const loginAsync = (userData) => async (dispatch) => {
       dispatch(loadingComplete()); // Dispatch loading complete action
       
     } else {
-      // console.error('Error logging in:', response.statusText);
-
+  
       const errorMessage = response.data.message || 'Failed to login';
       throw new Error(errorMessage);
     }
   } catch (error) {
-    // console.error('Error logging in:', error);
-
+   
     console.error('Error during signup:', error);
     throw new Error(error.message || 'Failed to login');
   }

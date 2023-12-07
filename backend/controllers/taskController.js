@@ -1,11 +1,11 @@
-// const Task = require('../models/taskModel')
 const mongoose = require('mongoose')
-const { getTasksRepo, getTaskRepo, deleteTaskRepo, createTaskRepo, updateTaskRepo } = require('../repositories/taskRepositories')
+const { taskRepository } = require('../repositories/taskRepositories');
+
 
 // GET all tasks
 const getTasks = async(req, res) => {
    const user_id =req.user._id
-   const tasks = await getTasksRepo({user_id});
+   const tasks = await taskRepository.find({user_id});
    res.status(200).json(tasks)
 }
 
@@ -18,7 +18,7 @@ const getTask = async (req, res) => {
     }
   
     // const task = await Task.findById(id)
-    const task = await getTaskRepo({id});
+    const task = await taskRepository.findById({id});
   
     if (!task) {
       return res.status(404).json({error: 'No such task'})
@@ -36,9 +36,7 @@ const createTask = async (req, res) => {
     // add to the database
     try {
       const user_id = req.user._id;
-      // const task = await Task.create({ title, user_id })
-
-      const task = await createTaskRepo({title, user_id});
+      const task = await taskRepository.create({title, user_id});
       res.status(200).json(task)
     } catch (error) {
       res.status(400).json({ error: error.message })
@@ -58,7 +56,7 @@ const deleteTask = async (req, res) => {
   
     // const task = await Task.findOneAndDelete({_id: id})
 
-    const task = await deleteTaskRepo({_id: id})
+    const task = await taskRepository.findOneAndDelete({_id: id})
   
     if(!task) {
       return res.status(400).json({error: 'No such task'})
@@ -78,7 +76,7 @@ const updateTask = async (req, res) => {
     return res.status(400).json({error: 'No such task'})
   }
 
-  const task = await updateTaskRepo({ id, ...req.body });
+  const task = await taskRepository.findOneAndUpdate({ id, ...req.body });
 
 
   // const task = await Task.findOneAndUpdate({_id: id}, {

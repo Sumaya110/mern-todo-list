@@ -17,7 +17,7 @@ export const useSignup = () => {
     try {
       await dispatch(signupAsync({email, password}));
       setIsLoading(false);
-      navigate('/user/login', { replace: true });
+      // navigate('/user/login', { replace: true });
 
     } catch (error) {
       setIsLoading(false);

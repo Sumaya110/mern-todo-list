@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { apiAddTask, apiDeleteTask, apiShowTasks, apiUpdateTask } from '../api/apiRoute';
 
 const initialTasks = {
   tasks: [],
@@ -45,12 +46,14 @@ export default tasksSlice.reducer;
 export const fetchTasks = (user) => async (dispatch) => {
   console.log(user)
   try {
-    const response = await axios.get('/api/tasks', {
-      headers : {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
-      }
-    });
+    // const response = await axios.get('/api/tasks', {
+    //   headers : {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${user.token}`
+    //   }
+    // });
+
+    const response = await apiShowTasks();
     console.log("fect task: ", {response});
     dispatch(showTasksSuccess(response.data));
     
@@ -68,12 +71,14 @@ export const addTask = (taskData, user) => async (dispatch) => {
       return;
     }
 
-    const response = await axios.post('/api/tasks', taskData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
-      },
-    });
+    // const response = await axios.post('/api/tasks', taskData, {
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${user.token}`
+    //   },
+    // });
+
+    const response= await apiAddTask(taskData);
     console.log("addTask function: ", {response})
 
     dispatch(addTaskSuccess(response.data));
@@ -82,17 +87,22 @@ export const addTask = (taskData, user) => async (dispatch) => {
   }
 };
 
+
+
 export const updateTask = (taskData, user) => async (dispatch) => {
   console.log("update task: ", taskData)
   try {
-    const response = await axios.patch(`/api/tasks/${taskData._id}`, taskData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
-      },
-    });
+    // const response = await axios.patch(`/api/tasks/${taskData._id}`, taskData, {
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${user.token}`
+     // },
 
+    // });
+
+    const response = await apiUpdateTask(taskData);
     dispatch(updateTaskSuccess(response.data));
+
   } catch (error) {
     console.error('Error updating task:', error);
   }
@@ -104,13 +114,15 @@ export const deleteTask = (taskData, user) => async (dispatch) => {
       return
     }
   try {
-    const response = await axios.delete(`/api/tasks/${taskData._id}`,{
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
-      },
+    // const response = await axios.delete(`/api/tasks/${taskData._id}`,{
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${user.token}`
+    //   },
   
-    });
+    // });
+
+    const response = await apiDeleteTask(taskData._id);
     
     dispatch(deleteTaskSuccess(response.data));
   } catch (error) {

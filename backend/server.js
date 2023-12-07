@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const cors = require('cors');
 const express = require('express')
 const mongoose = require('mongoose')
 const taskRoutes = require('./routes/tasks')
@@ -7,6 +8,10 @@ const userRoutes = require('./routes/user')
 
 //express app
 const app=express()
+
+
+// Allow all origins for simplicity. In a production environment, you may want to specify only specific origins.
+app.use(cors());
 
 //middleware
 app.use(express.json())

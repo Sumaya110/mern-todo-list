@@ -1,92 +1,80 @@
-// const User = require('../models/userModel')
-const jwt = require('jsonwebtoken')
-const { loginUserRepo, signupUserRepo } = require('../repositories/userRepositories')
+const bcrypt = require('bcrypt');
+const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const { userRepository } = require('../repositories/userRepositories');
 
 const createToken = (_id) => {
-  return jwt.sign({_id}, process.env.SECRET, { expiresIn: '9d' })
-}
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '9d' });
+};
 
-// login a user
-const loginUser = async (req, res) => {
-  const {email, password} = req.body
-
-  try {
-    // const user = await User.login(email, password)
-    const user = await loginUserRepo({email, password})
-
-    // create a token
-    const token = createToken(user._id)
-
-    res.status(200).json({email, token})
-  } catch (error) {
-    res.status(400).json({error: error.message})
-  }
-}
-
-// signup a user
+// Signup a user
 const signupUser = async (req, res) => {
-  const {email, password} = req.body
-  console.log(req.body)
+  const { email, password } = req.body;
 
   try {
-    // const user = await User.signup(email, password)
+    // Validation
+    if (!email || !password) {
+      throw Error('All fields must be filled');
+    }
 
-    const user = await signupUserRepo({email, password})
+    if (!validator.isEmail(email)) {
+      throw Error('Email not valid');
+    }
+
+    if (!validator.isStrongPassword(password)) {
+      throw Error('Password not strong enough');
+    }
+
+    const exists = await userRepository.findOne({ email });
+
+    if (exists) {
+      throw Error('Email already in use');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
+    const user = await userRepository.create({ email, password: hash });
 
 
     // create a token
-    const token = createToken(user._id)
+    const token = createToken(user._id);
 
-    res.status(200).json({email, token})
+    res.status(200).json({ email, token });
   } catch (error) {
-    res.status(400).json({error: error.message})
+    res.status(400).json({ error: error.message });
   }
-}
+};
 
-module.exports = { signupUser, loginUser }
+// Login a user
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
 
+  try {
+    // Validation
+    if (!email || !password) {
+      throw Error('All fields must be filled');
+    }
 
+    const user = await userRepository.findOne({ email });
 
+    if (!user) {
+      throw Error('Incorrect email');
+    }
 
+    const match = await bcrypt.compare(password, user.password);
 
-// const User = require('../models/userModel')
-// const jwt = require('jsonwebtoken')
+    if (!match) {
+      throw Error('Incorrect password');
+    }
 
-// const createToken = (_id) => {
-//   return jwt.sign({_id}, process.env.SECRET, { expiresIn: '9d' })
-// }
+    // create a token
+    const token = createToken(user._id);
 
-// // login a user
-// const loginUser = async (req, res) => {
-//   const {email, password} = req.body
+    res.status(200).json({ email, token });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-//   try {
-//     const user = await User.login(email, password)
-
-//     // create a token
-//     const token = createToken(user._id)
-
-//     res.status(200).json({email, token})
-//   } catch (error) {
-//     res.status(400).json({error: error.message})
-//   }
-// }
-
-// // signup a user
-// const signupUser = async (req, res) => {
-//   const {email, password} = req.body
-//   console.log(req.body)
-
-//   try {
-//     const user = await User.signup(email, password)
-
-//     // create a token
-//     const token = createToken(user._id)
-
-//     res.status(200).json({email, token})
-//   } catch (error) {
-//     res.status(400).json({error: error.message})
-//   }
-// }
-
-// module.exports = { signupUser, loginUser }
+module.exports = { signupUser, loginUser };

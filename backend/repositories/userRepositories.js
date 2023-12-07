@@ -1,11 +1,17 @@
 const userModel = require("../models/userModel");
 
-exports.loginUserRepo = async ({ email, password }) => {
-  const user = await userModel.login(email, password);
-  return user;
-};
 
-exports.signupUserRepo = async ({ email, password }) => {
-  const user = await userModel.signup(email, password);
+const findOne = async({email}) => {
+  const user = await userModel.findOne({email})
   return user;
-};
+}
+
+const create = async({email, password: hash}) => {
+  const user = await userModel.create({email, password: hash})
+  return user;
+}
+
+
+exports.userRepository ={
+  findOne, create
+}
