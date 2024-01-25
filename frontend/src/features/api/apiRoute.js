@@ -26,6 +26,7 @@ API.interceptors.response.use( (res) => res);
 export const apiShowTasks = (payload) => API.get("api/tasks");
 export const apiAddTask = (payload) => API.post("api/tasks", payload);
 export const apiDeleteTask = (payload) => API.delete(`api/tasks/${payload}`);
+
 export const apiUpdateTask = (payload) => API.patch(`api/tasks/${payload._id}`, payload);
 
 
